@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.Calendar;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         lvStudent = findViewById(R.id.listViewStudents);
         studentList = db.readStudent();
-        Log.i("getStudent", studentList.get(0).getHoten());
+//        Log.i("getStudent", studentList.get(0).getHoten());
         studentAdapter = new StudentAdapter(MainActivity.this, studentList);
         lvStudent.setAdapter(studentAdapter);
         lvStudent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -50,5 +51,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button add = findViewById(R.id.btn_store);
+
+        add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i  = new Intent(MainActivity.this, AddStudentActivity.class);
+                startActivity(i);
+            }
+        });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateStudentList();
+    }
+    private void updateStudentList() {
+        studentList.clear();
+        studentList.addAll(db.readStudent());
+        studentAdapter.notifyDataSetChanged();
     }
 }

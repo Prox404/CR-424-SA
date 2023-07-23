@@ -56,7 +56,7 @@ public class MyDB extends SQLiteOpenHelper {
 
     }
 
-    public void insertStudent(String hoten, Date ngaySinh, String soDT, String diaChi, String email, String nganh) {
+    public boolean insertStudent(String hoten, Date ngaySinh, String soDT, String diaChi, String email, String nganh) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues value1  = new ContentValues();
         value1.put("Hoten", hoten);
@@ -65,8 +65,10 @@ public class MyDB extends SQLiteOpenHelper {
         value1.put("DiaChi", diaChi);
         value1.put("Email", email);
         value1.put("Nganh", nganh);
-        db.insert("Student", null, value1);
+        long result = db.insert("Student", null, value1);
         db.close();
+
+        return result > 0;
     }
 
     public List<Student> readStudent() {
@@ -143,6 +145,28 @@ public class MyDB extends SQLiteOpenHelper {
         db.close();
 
         return students;
+    }
+
+    public boolean updateStudent(int studentId, String hoten, Date ngaySinh, String soDT, String diaChi, String email, String nganh) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_HOTEN, hoten);
+        values.put(COLUMN_NGAYSINH, ngaySinh.toString());
+        values.put(COLUMN_SODT, soDT);
+        values.put(COLUMN_DIACHI, diaChi);
+        values.put(COLUMN_EMAIL, email);
+        values.put(COLUMN_NGANH, nganh);
+
+        int rowsAffected = db.update("Student", values, COLUMN_ID + " = ?", new String[]{String.valueOf(studentId)});
+        db.close();
+        return rowsAffected > 0;
+    }
+
+    public boolean deleteStudent(int studentId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rowsAffected = db.delete("Student", COLUMN_ID + " = ?", new String[]{String.valueOf(studentId)});
+        db.close();
+        return rowsAffected > 0;
     }
 
     private Date parseDateString(String dateString) {
