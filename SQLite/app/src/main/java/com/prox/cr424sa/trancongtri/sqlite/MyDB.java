@@ -235,6 +235,54 @@ public class MyDB extends SQLiteOpenHelper {
         return rowsAffected > 0;
     }
 
+    public Student getStudentByID(int studentId) {
+        Student student = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String sqlQuery = "SELECT s.ID, s.HoTen, s.NgaySinh, s.SoDT, s.DiaChi, s.Email, s.ID_Lop, s.ID_Nganh, n.TenNganh " +
+                "FROM Student s " +
+                "LEFT JOIN Nganh n ON s.ID_Nganh = n.ID " +
+                "WHERE s.ID = ?";
+        String[] selectionArgs = {String.valueOf(studentId)};
+
+        Cursor cursor = db.rawQuery(sqlQuery, selectionArgs);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int idIndex = cursor.getColumnIndex(COLUMN_ID);
+            int hoTenIndex = cursor.getColumnIndex(COLUMN_HOTEN);
+            int ngaySinhIndex = cursor.getColumnIndex(COLUMN_NGAYSINH);
+            int soDTIndex = cursor.getColumnIndex(COLUMN_SODT);
+            int diaChiIndex = cursor.getColumnIndex(COLUMN_DIACHI);
+            int emailIndex = cursor.getColumnIndex(COLUMN_EMAIL);
+            int lopIndex = cursor.getColumnIndex(COLUMN_LOP);
+            int nganhIndex = cursor.getColumnIndex(COLUMN_NGANH);
+            int tenNganhIndex = cursor.getColumnIndex(COLUMN_TENNGANH);
+
+            if (idIndex >= 0 && hoTenIndex >= 0 && ngaySinhIndex >= 0 && soDTIndex >= 0 && diaChiIndex >= 0 && emailIndex >= 0 && lopIndex >= 0 && nganhIndex >= 0 && tenNganhIndex >= 0) {
+                int id = cursor.getInt(idIndex);
+                String hoTen = cursor.getString(hoTenIndex);
+                Date ngaySinh = parseDateString(cursor.getString(ngaySinhIndex));
+                String soDT = cursor.getString(soDTIndex);
+                String diaChi = cursor.getString(diaChiIndex);
+                String email = cursor.getString(emailIndex);
+                int lop = cursor.getInt(lopIndex);
+                int nganh = cursor.getInt(nganhIndex);
+                String tenNganh = cursor.getString(tenNganhIndex);
+
+                student = new Student(id, hoTen, ngaySinh, soDT, diaChi, email, lop, nganh, tenNganh);
+            } else {
+                Log.e("MyDB", "One or more columns not found in the cursor.");
+            }
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        db.close();
+
+        return student;
+    }
     public boolean deleteStudent(int studentId) {
         SQLiteDatabase db = this.getWritableDatabase();
         int rowsAffected = db.delete("Student", COLUMN_ID + " = ?", new String[]{String.valueOf(studentId)});

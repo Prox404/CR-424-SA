@@ -83,6 +83,18 @@ public class Student implements Serializable {
         this.ID_Lop = ID_Lop;
     }
 
+    public Student(int ID, String hoTen, Date ngaySinh, String soDT, String diaChi, String email, int lop, int nganh, String TenNganh) {
+        this.ID = ID;
+        Hoten = hoTen;
+        NgaySinh = ngaySinh;
+        SoDT = soDT;
+        DiaChi = diaChi;
+        Email = email;
+        this.ID_Nganh = ID_Nganh;
+        this.ID_Lop = ID_Lop;
+        this.TenNganh = TenNganh;
+    }
+
     private int ID;
     private String Hoten;
     private Date NgaySinh;
@@ -91,6 +103,16 @@ public class Student implements Serializable {
     private String Email;
     private int ID_Nganh;
     private int ID_Lop;
+    private String TenNganh;
+
+    public String getTenNganh() {
+        return TenNganh;
+    }
+
+    public void setTenNganh(String tenNganh) {
+        TenNganh = tenNganh;
+    }
+
 
     @NonNull
     @Override
