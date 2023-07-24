@@ -1,4 +1,4 @@
-package com.prox.cr424sa.trancongtri.bai8_database;
+package com.prox.cr424sa.trancongtri.sqlite;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
