@@ -66,6 +66,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button nganh = findViewById(R.id.btn_nganh);
+        nganh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i  = new Intent( MainActivity.this, NganhActivity.class);
+                startActivity(i);
+            }
+        });
     }
 
     @Override
