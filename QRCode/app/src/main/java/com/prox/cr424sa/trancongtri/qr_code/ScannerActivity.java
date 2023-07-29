@@ -79,12 +79,12 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
                     showURLOptions(scanResult);
                     isPopupShown = true;
                 }
-            } else if(isPhoneNumber(scanResult)){
+            } else if (isPhoneNumber(scanResult)) {
                 if (!isPopupShown) {
                     showPhoneResult(scanResult);
                     isPopupShown = true;
                 }
-            }else{
+            } else {
                 if (!isPopupShown) {
                     showURLText(scanResult);
                     isPopupShown = true;
@@ -173,10 +173,109 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
                 .build());
 
         // Lưu tên vào danh bạ
+
+        String namePattern = "N:(.*?);(.*?)\n";
+        String orgPattern = "ORG:(.*?)\n";
+        String cellPhonePattern = "TEL;TYPE=CELL:(.*?)\n";
+        String phonePattern = "TEL:(.*?)\n";
+        String urlPattern = "URL:(.*?)\n";
+        String faxPattern = "TEL;TYPE=FAX:(.*?)\n";
+        String addressPattern = "ADR:(.*?)\n";
+        String emailPattern = "EMAIL;TYPE=INTERNET:(.*?)\n";
+
+        Pattern namePat = Pattern.compile(namePattern);
+        Pattern orgPat = Pattern.compile(orgPattern);
+        Pattern cellPhonePat = Pattern.compile(cellPhonePattern);
+        Pattern phonePat = Pattern.compile(phonePattern);
+        Pattern faxPat = Pattern.compile(faxPattern);
+        Pattern addressPat = Pattern.compile(addressPattern);
+        Pattern emailPat = Pattern.compile(emailPattern);
+        Pattern urlPat = Pattern.compile(urlPattern);
+
+        Matcher nameMatcher = namePat.matcher(scannedContent);
+        Matcher orgMatcher = orgPat.matcher(scannedContent);
+        Matcher cellPhoneMatcher = cellPhonePat.matcher(scannedContent);
+        Matcher phoneMatcher = phonePat.matcher(scannedContent);
+        Matcher faxMatcher = faxPat.matcher(scannedContent);
+        Matcher addressMatcher = addressPat.matcher(scannedContent);
+        Matcher emailMatcher = emailPat.matcher(scannedContent);
+        Matcher urlMatcher = urlPat.matcher(scannedContent);
+
+        String name = "";
+        String org = "";
+        String cellPhone = "";
+        String phone = "";
+        String fax = "";
+        String address = "";
+        String email = "";
+        String url = "";
+
+        if (nameMatcher.find()) {
+            name = nameMatcher.group(2) + " " + nameMatcher.group(1);
+        }
+
+        if (orgMatcher.find()) {
+            org = orgMatcher.group(1);
+        }
+
+        if (cellPhoneMatcher.find()) {
+            cellPhone = cellPhoneMatcher.group(1);
+        }
+
+        if (phoneMatcher.find()) {
+            phone = phoneMatcher.group(1);
+        }
+
+        if (faxMatcher.find()) {
+            fax = faxMatcher.group(1);
+        }
+
+        if (addressMatcher.find()) {
+            address = addressMatcher.group(1);
+        }
+
+        if (emailMatcher.find()) {
+            email = emailMatcher.group(1);
+        }
+
+        if (urlMatcher.find()) {
+            url = urlMatcher.group(1);
+        }
+
         ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                 .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, scannedContent) // Thay scannedContent bằng tên bạn muốn lưu
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+                .build());
+
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.Email.ADDRESS, email)
+                .build());
+
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
+                .build());
+
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, org)
+                .build());
+
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS, address)
+                .build());
+
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.Website.URL, url)
                 .build());
 
         try {
@@ -214,6 +313,7 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
             }
         }
     }
+
     public String extractPhoneNumberFromVCard(String vcard) {
         // Biểu thức chính quy để tìm chuỗi TEL;TYPE=CELL:<số điện thoại>
         String phonePattern = "TEL;TYPE=CELL:(\\d+)";
@@ -313,8 +413,8 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
                 "Fax: " + fax + "\n" +
                 "Address: " + address + "\n" +
                 "Email: " + email;
-        
+
     }
 }
 
-}
+
