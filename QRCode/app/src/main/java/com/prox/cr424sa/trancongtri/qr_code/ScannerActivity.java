@@ -6,15 +6,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ContentProviderOperation;
 import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.zxing.Result;
@@ -22,6 +26,7 @@ import com.google.zxing.Result;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -31,22 +36,33 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
 
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final int REQUEST_WRITE_CONTACTS_PERMISSION = 2;
-
     private ZXingScannerView scannerView;
-    private TextView textViewResult;
     private boolean isPopupShown = false;
     private boolean isProcessing = false;
-
+    private boolean flash = false;
     private String scannedContent;
+
+    ImageButton btnFlash;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scanner);
 
-        textViewResult = findViewById(R.id.textViewResult);
-        scannerView = new ZXingScannerView(this);
-        setContentView(scannerView);
+//        textViewResult = findViewById(R.id.textViewResult);
+        scannerView = findViewById(R.id.zxingScannerView);;
+        btnFlash = findViewById(R.id.btn_flash);
+
+        btnFlash.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                flash = !flash;
+                Log.i("flash", String.valueOf(flash));
+                scannerView.setFlash(flash);
+            }
+        });
+
+//        setContentView(scannerView);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
@@ -114,6 +130,7 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
                 .setMessage(message)
                 .setPositiveButton("Open in Browser", (dialog, which) -> {
                     //TODO: Thực hiện thao tác mở trình duyệt ở đây (nếu cần)
+                    openLinkInBrowser(url);
                     isPopupShown = false;
                     startCountdown();
                 })
@@ -344,76 +361,18 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
         }
     }
 
-    public static void parseAndDisplayVCard(String vcardData) {
-        String namePattern = "N:(.*?);(.*?)\n";
-        String orgPattern = "ORG:(.*?)\n";
-        String cellPhonePattern = "TEL;TYPE=CELL:(.*?)\n";
-        String phonePattern = "TEL:(.*?)\n";
-        String faxPattern = "TEL;TYPE=FAX:(.*?)\n";
-        String addressPattern = "ADR:(.*?)\n";
-        String emailPattern = "EMAIL;TYPE=INTERNET:(.*?)\n";
+//    @SuppressLint("QueryPermissionsNeeded")
+    private void openLinkInBrowser(String url) {
+        // Tạo một Intent để mở trình duyệt và chuyển đến địa chỉ URL được quét từ mã QR
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 
-        Pattern namePat = Pattern.compile(namePattern);
-        Pattern orgPat = Pattern.compile(orgPattern);
-        Pattern cellPhonePat = Pattern.compile(cellPhonePattern);
-        Pattern phonePat = Pattern.compile(phonePattern);
-        Pattern faxPat = Pattern.compile(faxPattern);
-        Pattern addressPat = Pattern.compile(addressPattern);
-        Pattern emailPat = Pattern.compile(emailPattern);
-
-        Matcher nameMatcher = namePat.matcher(vcardData);
-        Matcher orgMatcher = orgPat.matcher(vcardData);
-        Matcher cellPhoneMatcher = cellPhonePat.matcher(vcardData);
-        Matcher phoneMatcher = phonePat.matcher(vcardData);
-        Matcher faxMatcher = faxPat.matcher(vcardData);
-        Matcher addressMatcher = addressPat.matcher(vcardData);
-        Matcher emailMatcher = emailPat.matcher(vcardData);
-
-        String name = "";
-        String org = "";
-        String cellPhone = "";
-        String phone = "";
-        String fax = "";
-        String address = "";
-        String email = "";
-
-        if (nameMatcher.find()) {
-            name = nameMatcher.group(2) + " " + nameMatcher.group(1);
+        // Kiểm tra xem có ứng dụng trình duyệt nào có sẵn để xử lý Intent này hay không
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            // Nếu không có ứng dụng trình duyệt nào có sẵn, bạn có thể hiển thị một thông báo hoặc xử lý tùy ý
+            Toast.makeText(this, "No browser app found to open the link.", Toast.LENGTH_SHORT).show();
         }
-
-        if (orgMatcher.find()) {
-            org = orgMatcher.group(1);
-        }
-
-        if (cellPhoneMatcher.find()) {
-            cellPhone = cellPhoneMatcher.group(1);
-        }
-
-        if (phoneMatcher.find()) {
-            phone = phoneMatcher.group(1);
-        }
-
-        if (faxMatcher.find()) {
-            fax = faxMatcher.group(1);
-        }
-
-        if (addressMatcher.find()) {
-            address = addressMatcher.group(1);
-        }
-
-        if (emailMatcher.find()) {
-            email = emailMatcher.group(1);
-        }
-
-        // Hiển thị thông tin trong AlertDialog
-        String message = "Name: " + name + "\n" +
-                "Organization: " + org + "\n" +
-                "Cell-phone: " + cellPhone + "\n" +
-                "Phone: " + phone + "\n" +
-                "Fax: " + fax + "\n" +
-                "Address: " + address + "\n" +
-                "Email: " + email;
-
     }
 }
 

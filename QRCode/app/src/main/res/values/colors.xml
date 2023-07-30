@@ -2,4 +2,12 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="textColorPrimary">#12160f</color>
+    <color name="mask_scanner_color">#FFFFFFFF</color>
+    <color name="background_primary">#f1f1e9</color>
+    <color name="status_bar_color">#f1f1e9</color>
+    <color name="navigation_bar_color">#6a6c5f</color>
+    <color name="home_scanner_item_bg">#c7f36c</color>
+    <color name="home_item_bg">#FFF</color>
+
 </resources>
