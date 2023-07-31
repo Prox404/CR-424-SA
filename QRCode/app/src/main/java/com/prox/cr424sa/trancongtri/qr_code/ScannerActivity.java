@@ -41,8 +41,9 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
     private boolean isProcessing = false;
     private boolean flash = false;
     private String scannedContent;
-
     ImageButton btnFlash;
+
+    Database db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,7 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
 //        textViewResult = findViewById(R.id.textViewResult);
         scannerView = findViewById(R.id.zxingScannerView);;
         btnFlash = findViewById(R.id.btn_flash);
+        db = new Database(this);
 
         btnFlash.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,19 +127,18 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
 
     private void showURLOptions(String url) {
         String message = "Detected URL:\n" + url + "\n\nChoose an action:";
+        saveLinkToDB(url);
         new AlertDialog.Builder(this)
                 .setTitle("QR Scan Result")
                 .setMessage(message)
                 .setPositiveButton("Open in Browser", (dialog, which) -> {
                     //TODO: Thực hiện thao tác mở trình duyệt ở đây (nếu cần)
                     openLinkInBrowser(url);
-                    isPopupShown = false;
-                    startCountdown();
+                    finish();
                 })
                 .setNegativeButton("Copy Link", (dialog, which) -> {
                     //TODO: Thực hiện thao tác sao chép đường dẫn ở đây (nếu cần)
-                    isPopupShown = false;
-                    startCountdown();
+                    finish();
                 })
                 .setCancelable(true)
                 .show();
@@ -146,18 +147,21 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
     private void showURLText(String text) {
         Log.i("Content", text);
         String message = "Detected text:\n" + text + "\n\n";
+        saveTextToDB(text);
         new AlertDialog.Builder(this)
                 .setTitle("QR Scan Result")
                 .setMessage(message)
                 .setPositiveButton("OK", (dialog, which) -> {
-                    isPopupShown = false;
-                    startCountdown();
+                    finish();
                 })
                 .setCancelable(true)
                 .show();
     }
 
     private void showPhoneResult(String content) {
+        //Lưu vào lịch sử
+        saveToContactToDB();
+
         // Hiển thị popup xác nhận lưu thông tin vào danh bạ
         // Nếu người dùng đồng ý lưu, yêu cầu cấp quyền ghi danh bạ
         new AlertDialog.Builder(this)
@@ -177,6 +181,86 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
             // Xin cấp quyền WRITE_CONTACTS tại thời điểm chạy
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, REQUEST_WRITE_CONTACTS_PERMISSION);
         }
+    }
+
+    private void saveLinkToDB(String link){
+        db.insertQR(null,link,null,null,null,null,null,null);
+    }
+
+    private void saveTextToDB(String text){
+        db.insertQR(text,null,null,null,null,null,null,null);
+    }
+
+    private void saveToContactToDB(){
+        String namePattern = "N:(.*?);(.*?)\n";
+        String orgPattern = "ORG:(.*?)\n";
+        String cellPhonePattern = "TEL;TYPE=CELL:(.*?)\n";
+        String phonePattern = "TEL:(.*?)\n";
+        String urlPattern = "URL:(.*?)\n";
+        String faxPattern = "TEL;TYPE=FAX:(.*?)\n";
+        String addressPattern = "ADR:(.*?)\n";
+        String emailPattern = "EMAIL;TYPE=INTERNET:(.*?)\n";
+
+        Pattern namePat = Pattern.compile(namePattern);
+        Pattern orgPat = Pattern.compile(orgPattern);
+        Pattern cellPhonePat = Pattern.compile(cellPhonePattern);
+        Pattern phonePat = Pattern.compile(phonePattern);
+        Pattern faxPat = Pattern.compile(faxPattern);
+        Pattern addressPat = Pattern.compile(addressPattern);
+        Pattern emailPat = Pattern.compile(emailPattern);
+        Pattern urlPat = Pattern.compile(urlPattern);
+
+        Matcher nameMatcher = namePat.matcher(scannedContent);
+        Matcher orgMatcher = orgPat.matcher(scannedContent);
+        Matcher cellPhoneMatcher = cellPhonePat.matcher(scannedContent);
+        Matcher phoneMatcher = phonePat.matcher(scannedContent);
+        Matcher faxMatcher = faxPat.matcher(scannedContent);
+        Matcher addressMatcher = addressPat.matcher(scannedContent);
+        Matcher emailMatcher = emailPat.matcher(scannedContent);
+        Matcher urlMatcher = urlPat.matcher(scannedContent);
+
+        String name = null;
+        String org = null;
+        String cellPhone = null;
+        String phone = null;
+        String fax = null;
+        String address = null;
+        String email = null;
+        String url = null;
+
+        if (nameMatcher.find()) {
+            name = nameMatcher.group(2) + " " + nameMatcher.group(1);
+        }
+
+        if (orgMatcher.find()) {
+            org = orgMatcher.group(1);
+        }
+
+        if (cellPhoneMatcher.find()) {
+            cellPhone = cellPhoneMatcher.group(1);
+        }
+
+        if (phoneMatcher.find()) {
+            phone = phoneMatcher.group(1);
+        }
+
+        if (faxMatcher.find()) {
+            fax = faxMatcher.group(1);
+        }
+
+        if (addressMatcher.find()) {
+            address = addressMatcher.group(1);
+        }
+
+        if (emailMatcher.find()) {
+            email = emailMatcher.group(1);
+        }
+
+        if (urlMatcher.find()) {
+            url = urlMatcher.group(1);
+        }
+
+        db.insertQR(null,null,name,org,phone,address,email,url);
     }
 
     private void saveToContacts() {
@@ -218,14 +302,14 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
         Matcher emailMatcher = emailPat.matcher(scannedContent);
         Matcher urlMatcher = urlPat.matcher(scannedContent);
 
-        String name = "";
-        String org = "";
-        String cellPhone = "";
-        String phone = "";
-        String fax = "";
-        String address = "";
-        String email = "";
-        String url = "";
+        String name = null;
+        String org = null;
+        String cellPhone = null;
+        String phone = null;
+        String fax = null;
+        String address = null;
+        String email = null;
+        String url = null;
 
         if (nameMatcher.find()) {
             name = nameMatcher.group(2) + " " + nameMatcher.group(1);
@@ -258,6 +342,8 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
         if (urlMatcher.find()) {
             url = urlMatcher.group(1);
         }
+
+        Log.i("Phone: ", scannedContent);
 
         ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)

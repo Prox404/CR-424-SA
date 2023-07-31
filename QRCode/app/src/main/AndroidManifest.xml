@@ -8,6 +8,12 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
 
     <application
         android:allowBackup="true"
@@ -20,6 +26,9 @@
         android:theme="@style/Theme.QRCode"
         tools:targetApi="31">
         <activity
+            android:name=".GenerateTextQRActivity"
+            android:exported="false" />
+        <activity
             android:name=".ScannerActivity"
             android:exported="false" />
         <activity
@@ -31,6 +40,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>
