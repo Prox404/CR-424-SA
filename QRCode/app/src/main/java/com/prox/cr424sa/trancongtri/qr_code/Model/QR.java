@@ -6,7 +6,6 @@ import java.io.Serializable;
 
 public class QR implements Serializable {
 
-
     private int ID;
     private String Text;
     private String URL;
@@ -16,6 +15,7 @@ public class QR implements Serializable {
     private String Address;
     private String Email;
     private String Website;
+    private String Image;
 
     public QR(int ID,  String text, String URL, String name, String org, String phone, String address, String email, String website) {
         this.ID = ID;
@@ -27,6 +27,19 @@ public class QR implements Serializable {
         this.Address = address;
         this.Email = email;
         this.Website = website;
+    }
+
+    public QR(int ID, String text, String URL, String name, String org, String phone, String address, String email, String website, String image) {
+        this.ID = ID;
+        Text = text;
+        this.URL = URL;
+        Name = name;
+        Org = org;
+        Phone = phone;
+        Address = address;
+        Email = email;
+        Website = website;
+        Image = image;
     }
 
     public int getID() {
@@ -101,6 +114,14 @@ public class QR implements Serializable {
         Website = website;
     }
 
+    public String getImage() {
+        return Image;
+    }
+
+    public void setImage(String image) {
+        Image = image;
+    }
+
 
     @NonNull
     @Override
@@ -114,6 +135,7 @@ public class QR implements Serializable {
                 ", Address='" + Address + '\'' +
                 ", Email='" + Email + '\'' +
                 ", Website='" + Website + '\'' +
+                ", Image='" + Image + '\'' +
                 '}';
     }
 }

@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
@@ -30,13 +31,18 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-public class GenerateTextQRActivity extends AppCompatActivity {
+public class GenerateTextQRActivity extends BaseActivity {
 
     private ImageView imageViewResult;
     private EditText editTextText;
     private Button btnGenerate,btnShare, btnSave;
 
+    LinearLayout showActionLayout;
+    Database db;
+
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
+
+    String scannedContent = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,13 +54,20 @@ public class GenerateTextQRActivity extends AppCompatActivity {
         btnGenerate = findViewById(R.id.btn_generate);
         btnShare = findViewById(R.id.btn_share);
         btnSave = findViewById(R.id.btn_save);
+        showActionLayout = findViewById(R.id.qr_action);
+        showActionLayout.setVisibility(View.GONE);
+        db = new Database(this);
 
         btnGenerate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String textToEncode = editTextText.getText().toString().trim();
+                scannedContent = textToEncode;
                 if (!textToEncode.isEmpty()) {
                     generateQRCode(textToEncode);
+                    showActionLayout.setVisibility(View.VISIBLE);
+                }else{
+                    Toast.makeText(GenerateTextQRActivity.this, "Please input a message !", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -145,7 +158,12 @@ public class GenerateTextQRActivity extends AppCompatActivity {
             String qrCodePath = saveImageToStorage(qrCodeBitmap);
 
             if (qrCodePath != null) {
-                Toast.makeText(this, "QR Code saved to Gallery", Toast.LENGTH_SHORT).show();
+                boolean isInserted = db.insertCreatedQR(scannedContent,null, null, null, null, null, null, null, qrCodePath);
+                if (isInserted) {
+                    Toast.makeText(this, "QR Code data saved successfully !", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Failed to save QR Code data !", Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(this, "Failed to save QR Code", Toast.LENGTH_SHORT).show();
             }

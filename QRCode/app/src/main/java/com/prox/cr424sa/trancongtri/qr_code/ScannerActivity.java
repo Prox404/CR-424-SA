@@ -7,7 +7,10 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ContentProviderOperation;
+import android.content.Context;
 import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.content.pm.PackageManager;
@@ -18,6 +21,7 @@ import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -32,10 +36,11 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ScannerActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
+public class ScannerActivity extends BaseActivity implements ZXingScannerView.ResultHandler {
 
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final int REQUEST_WRITE_CONTACTS_PERMISSION = 2;
+    private static final int REQUEST_CALL_PHONE_PERMISSION = 11;
     private ZXingScannerView scannerView;
     private boolean isPopupShown = false;
     private boolean isProcessing = false;
@@ -48,9 +53,9 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_scanner);
 
-//        textViewResult = findViewById(R.id.textViewResult);
         scannerView = findViewById(R.id.zxingScannerView);;
         btnFlash = findViewById(R.id.btn_flash);
         db = new Database(this);
@@ -74,6 +79,12 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
     @Override
     public void onResume() {
         super.onResume();
+
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        decorView.setSystemUiVisibility(uiOptions);
+
         scannerView.setResultHandler(this);
         scannerView.startCamera();
     }
@@ -91,7 +102,6 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
             String scanResult = result.getText();
             scannedContent = scanResult;
 
-//        textViewResult.setText(scanResult);
             if (isURL(scanResult)) {
                 if (!isPopupShown) {
                     showURLOptions(scanResult);
@@ -114,14 +124,12 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
     private void startCountdown() {
         new Handler().postDelayed(() -> {
             Log.i("countdown", "call");
-            // Đếm ngược đã kết thúc, cho phép xử lý kết quả mới
             isProcessing = false;
             scannerView.resumeCameraPreview(this);
         }, 3000);
     }
 
     private boolean isURL(String str) {
-        // Kiểm tra xem chuỗi có bắt đầu bằng "http://" hoặc "https://" không
         return str != null && (str.startsWith("http://") || str.startsWith("https://"));
     }
 
@@ -132,16 +140,21 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
                 .setTitle("QR Scan Result")
                 .setMessage(message)
                 .setPositiveButton("Open in Browser", (dialog, which) -> {
-                    //TODO: Thực hiện thao tác mở trình duyệt ở đây (nếu cần)
                     openLinkInBrowser(url);
                     finish();
                 })
                 .setNegativeButton("Copy Link", (dialog, which) -> {
-                    //TODO: Thực hiện thao tác sao chép đường dẫn ở đây (nếu cần)
+                    copyToClipboard(url);
                     finish();
                 })
                 .setCancelable(true)
                 .show();
+    }
+
+    private void copyToClipboard(String text) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Text", text);
+        clipboard.setPrimaryClip(clip);
     }
 
     private void showURLText(String text) {
@@ -154,31 +167,47 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
                 .setPositiveButton("OK", (dialog, which) -> {
                     finish();
                 })
+                .setNegativeButton("Copy", (dialog, which) -> {
+                    copyToClipboard(text);
+                    finish();
+                })
                 .setCancelable(true)
                 .show();
     }
 
     private void showPhoneResult(String content) {
-        //Lưu vào lịch sử
         saveToContactToDB();
 
-        // Hiển thị popup xác nhận lưu thông tin vào danh bạ
-        // Nếu người dùng đồng ý lưu, yêu cầu cấp quyền ghi danh bạ
         new AlertDialog.Builder(this)
                 .setTitle("QR Scan Result")
                 .setMessage("Do you want to save this contact to your phone book?")
                 .setPositiveButton("Save", (dialog, which) -> requestWriteContactsPermission())
                 .setNegativeButton("Cancel", (dialog, which) -> finish())
+                .setNeutralButton("Call", (dialog, which) -> makePhoneCall())
                 .setCancelable(true)
                 .show();
     }
 
+    private void makePhoneCall() {
+        // Replace "phoneNumber" with the actual phone number extracted from the QR code
+        String phoneNumber = extractPhoneNumberFromVCard(scannedContent);
+
+        // Check if the device supports making phone calls
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+            // If the permission is granted, initiate the call
+            Intent callIntent = new Intent(Intent.ACTION_CALL);
+            callIntent.setData(Uri.parse("tel:" + phoneNumber));
+            startActivity(callIntent);
+        } else {
+            // If the permission is not granted, request it
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL_PHONE_PERMISSION);
+        }
+    }
+
     private void requestWriteContactsPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            // Đã có quyền, lưu thông tin vào danh bạ
             saveToContacts();
         } else {
-            // Xin cấp quyền WRITE_CONTACTS tại thời điểm chạy
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_CONTACTS}, REQUEST_WRITE_CONTACTS_PERMISSION);
         }
     }
@@ -264,7 +293,6 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
     }
 
     private void saveToContacts() {
-        // Tạo một danh bạ mới
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
         int rawContactInsertIndex = ops.size();
 
@@ -382,13 +410,11 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
                 .build());
 
         try {
-            // Thực hiện thêm thông tin vào danh bạ
             getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
         } catch (RemoteException | OperationApplicationException e) {
             e.printStackTrace();
         }
 
-        // Hoàn thành và hiển thị thông báo thành công
         new AlertDialog.Builder(this)
                 .setTitle("Success")
                 .setMessage("Contact has been saved to your phone book.")
@@ -403,10 +429,8 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_WRITE_CONTACTS_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Người dùng đã cho phép, lưu thông tin vào danh bạ
                 saveToContacts();
             } else {
-                // Người dùng không cho phép, hiển thị thông báo và kết thúc
                 new AlertDialog.Builder(this)
                         .setTitle("Permission Denied")
                         .setMessage("You have denied the permission to save contact.")
@@ -415,11 +439,21 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
                         .show();
             }
         }
+
+        if (requestCode == REQUEST_CALL_PHONE_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // If the call phone permission is granted after the request, make the phone call
+                makePhoneCall();
+            } else {
+                // If the permission is denied, show a message or handle accordingly
+                Toast.makeText(this, "Call Phone Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     public String extractPhoneNumberFromVCard(String vcard) {
         // Biểu thức chính quy để tìm chuỗi TEL;TYPE=CELL:<số điện thoại>
-        String phonePattern = "TEL;TYPE=CELL:(\\d+)";
+        String phonePattern = "TEL:(\\d+)";
 
         Pattern pattern = Pattern.compile(phonePattern);
         Matcher matcher = pattern.matcher(vcard);
@@ -434,13 +468,12 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
 
     public boolean isPhoneNumber(String vcard) {
         // Biểu thức chính quy để tìm chuỗi TEL;TYPE=CELL:<số điện thoại>
-        String phonePattern = "TEL;TYPE=CELL:(\\d+)";
+        String phonePattern = "TEL:(\\d+)";
 
         Pattern pattern = Pattern.compile(phonePattern);
         Matcher matcher = pattern.matcher(vcard);
 
         if (matcher.find()) {
-            // Lấy số điện thoại từ nhóm ngoặc trong biểu thức chính quy
             return matcher.group(1).length() > 0;
         } else {
             return false;
@@ -449,14 +482,10 @@ public class ScannerActivity extends AppCompatActivity implements ZXingScannerVi
 
 //    @SuppressLint("QueryPermissionsNeeded")
     private void openLinkInBrowser(String url) {
-        // Tạo một Intent để mở trình duyệt và chuyển đến địa chỉ URL được quét từ mã QR
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-
-        // Kiểm tra xem có ứng dụng trình duyệt nào có sẵn để xử lý Intent này hay không
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         } else {
-            // Nếu không có ứng dụng trình duyệt nào có sẵn, bạn có thể hiển thị một thông báo hoặc xử lý tùy ý
             Toast.makeText(this, "No browser app found to open the link.", Toast.LENGTH_SHORT).show();
         }
     }

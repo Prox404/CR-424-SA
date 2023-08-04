@@ -1,3 +1,64 @@
 <resources>
     <string name="app_name">QR-Code</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="qr_me">QR Me</string>
+    <string name="qr_code_creator_and_qr_maker">QR Code Creator and QR Maker</string>
+    <string name="hello">Hello 🖐️</string>
+    <string name="let_s_join_with_us_now">Let\'s join with us now !</string>
+    <string name="scanner_me">Scanner me</string>
+    <string name="generate_qr">Generate QR</string>
+    <string name="text">Text</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="history">History</string>
+    <string name="app_settings">App Settings</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="scanned_tab_title">Scanned</string>
+    <string name="created_tab_title">Created</string>
+    <string name="qr_adapter_name">Name: %1$s</string>
+    <string name="qr_adapter_org">Org: %1$s</string>
+    <string name="qr_adapter_text">Text: %1$s</string>
+    <string name="qr_adapter_url">URL: %1$s</string>
+    <string name="qr_adapter_phone">Phone: %1$s</string>
+    <string name="qr_adapter_address">Address: %1$s</string>
+    <string name="qr_adapter_email">Email: %1$s</string>
+    <string name="qr_adapter_website">Website: %1$s</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="language">Language</string>
+    <string name="theme">Theme</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="language_title">Switch to Vietnamese</string>
+    <string name="theme_title">Dark mode</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="place_the_qr_code_inside_the_area">Place the QR code inside the area</string>
+    <string name="scanning_will_start_automatically">Scanning will start automatically</string>
+    <string name="url">URL*</string>
+    <string name="input_your_url_here">Input your URL here</string>
+    <string name="generate">Generate</string>
+    <string name="first_name">First Name*</string>
+    <string name="hint_first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="hint_last_name">Last Name</string>
+    <string name="phone_number_label">Phone Number*</string>
+    <string name="hint_phone_number">Phone Number</string>
+    <string name="organization">Organization</string>
+    <string name="email">Email</string>
+    <string name="address">Address</string>
+    <string name="website">Website</string>
+    <string name="message">Message*</string>
+    <string name="input_your_message_here">Input your message here</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="share">Share</string>
+    <string name="link">URL</string>
 </resources>

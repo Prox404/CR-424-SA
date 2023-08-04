@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="bottom|center"
-    android:background="@color/background_primary"
+    android:background="@color/mask_scanner_color"
     tools:context=".ScannerActivity">
 
     <!--    <TextView-->
@@ -20,30 +20,33 @@
         android:id="@+id/zxingScannerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:borderColor="@color/black"
-        app:borderWidth="4dp"
+        app:borderColor="@color/white"
         app:borderLength="24dp"
+        app:borderWidth="4dp"
         app:cornerRadius="10dp"
         app:laserColor="#FFF"
-        app:maskColor="@color/background_primary"
-        app:roundedCorner="true" >
+        app:maskColor="@color/mask_scanner_color"
+        app:roundedCorner="true">
 
     </me.dm7.barcodescanner.zxing.ZXingScannerView>
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="50dp"
+        android:background="@drawable/popup_window"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Place the QR code inside the area"
+            android:text="@string/place_the_qr_code_inside_the_area"
             android:textAlignment="center"
+            android:textColor="@color/textColorPrimary"
             android:textSize="20sp" />
 
         <TextView
@@ -51,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="Scanning will start automatically"
+            android:text="@string/scanning_will_start_automatically"
             android:textColor="#a8a8b2" />
     </LinearLayout>
 

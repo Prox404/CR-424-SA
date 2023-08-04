@@ -30,6 +30,17 @@ public class Database extends SQLiteOpenHelper {
             "Email TEXT," +
             "Website TEXT )";
 
+    private static final String CREATE_TABLE_CREATED_QR = "CREATE TABLE CREATED_QR (ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "Text TEXT , " +
+            "URL TEXT, " +
+            "Name TEXT," +
+            "Org TEXT," +
+            "Phone TEXT," +
+            "Address TEXT," +
+            "Email TEXT," +
+            "Website TEXT," +
+            "Image TEXT )";
+
     public static final String COLUMN_ID = "ID";
     public static final String COLUMN_TEXT = "Text";
     public static final String COLUMN_URL = "URL";
@@ -39,6 +50,7 @@ public class Database extends SQLiteOpenHelper {
     public static final String COLUMN_ADDRESS = "Address";
     public static final String COLUMN_EMAIL = "Email";
     public static final String COLUMN_WEBSITE = "Website";
+    private static final String COLUMN_IMAGE = "Image";
 
     public Database(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -47,6 +59,7 @@ public class Database extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(CREATE_TABLE_QR);
+        sqLiteDatabase.execSQL(CREATE_TABLE_CREATED_QR);
     }
 
     @Override
@@ -75,11 +88,20 @@ public class Database extends SQLiteOpenHelper {
         return result > 0;
     }
 
+    public boolean deleteQR(int qrID) {
+        Log.i("Delete", String.valueOf(qrID));
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rowsAffected = db.delete("QR", COLUMN_ID + " = ?", new String[]{String.valueOf(qrID)});
+        db.close();
+        return rowsAffected > 0;
+    }
+
     public List<QR> getAllQR() {
         List<QR> qr = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         String[] columns = {
+                "ID",
                 "Text",
                 "URL",
                 "Name",
@@ -168,6 +190,135 @@ public class Database extends SQLiteOpenHelper {
         }
         db.close();
         return qr;
+    }
+
+    public boolean insertCreatedQR(String Text, String URL, String Name, String Org, String Phone, String Address,  String Email, String Website, String Image) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values  = new ContentValues();
+        values.put("Text", Text);
+        values.put("URL", URL);
+        values.put("Name", Name);
+        values.put("Org", Org);
+        values.put("Phone", Phone);
+        values.put("Address", Address);
+        values.put("Email", Email);
+        values.put("Website", Website);
+        values.put("Image", Image);
+        long result = db.insert("CREATED_QR", null, values);
+        db.close();
+        return result > 0;
+    }
+
+    public boolean deleteCreatedQR(int qrID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rowsAffected = db.delete("CREATED_QR", COLUMN_ID + " = ?", new String[]{String.valueOf(qrID)});
+        db.close();
+        return rowsAffected > 0;
+    }
+
+    public List<QR> getAllCreatedQR() {
+        List<QR> qrList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] columns = {
+                "ID",
+                "Text",
+                "URL",
+                "Name",
+                "Org",
+                "Phone",
+                "Address",
+                "Email",
+                "Website",
+                "Image"
+        };
+        Cursor cursor = db.query("CREATED_QR", columns, null, null, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int id = -1;
+                int idIndex = cursor.getColumnIndex(COLUMN_ID);
+                if(idIndex >= 0){
+                    id = cursor.getInt(idIndex);
+                }
+
+                String Text = null;
+                int TextIndex = cursor.getColumnIndex(COLUMN_TEXT);
+                if(TextIndex >= 0){
+                    Text = cursor.getString(TextIndex);
+                }
+
+                String URL = null;
+                int URLIndex = cursor.getColumnIndex(COLUMN_URL);
+                if(URLIndex >= 0){
+                    URL = cursor.getString(URLIndex);
+                }
+
+                String Name = null;
+                int NameIndex = cursor.getColumnIndex(COLUMN_NAME);
+                if(NameIndex >= 0){
+                    Name = cursor.getString(NameIndex);
+                }
+
+                String Org = null;
+                int OrgIndex = cursor.getColumnIndex(COLUMN_ORG);
+                if(OrgIndex >= 0){
+                    Org = cursor.getString(OrgIndex);
+                }
+
+                String Phone = null;
+                int PhoneIndex = cursor.getColumnIndex(COLUMN_PHONE);
+                if(PhoneIndex >= 0){
+                    Phone = cursor.getString(PhoneIndex);
+                }
+
+                String Address = null;
+                int AddressIndex = cursor.getColumnIndex(COLUMN_ADDRESS);
+                if(AddressIndex >= 0){
+                    Address = cursor.getString(AddressIndex);
+                }
+
+                String Email = null;
+                int EmailIndex = cursor.getColumnIndex(COLUMN_EMAIL);
+                if(EmailIndex >= 0){
+                    Email = cursor.getString(EmailIndex);
+                }
+
+                String Website = null;
+                int WebsiteIndex = cursor.getColumnIndex(COLUMN_WEBSITE);
+                if(WebsiteIndex >= 0){
+                    Website = cursor.getString(WebsiteIndex);
+                }
+
+                String Image = null;
+                int ImageIndex = cursor.getColumnIndex(COLUMN_IMAGE);
+                if(ImageIndex >= 0){
+                    Image = cursor.getString(ImageIndex);
+                }
+//                String image = cursor.getString(cursor.getColumnIndex("Image")); // Replace "Image" with the actual column name
+
+                QR newQR = new QR(
+                        id,
+                        Text,
+                        URL,
+                        Name,
+                        Org,
+                        Phone,
+                        Address,
+                        Email,
+                        Website,
+                        Image
+                );
+                qrList.add(newQR);
+            } while (cursor.moveToNext());
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        db.close();
+        return qrList;
     }
 
 }

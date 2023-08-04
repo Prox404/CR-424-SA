@@ -50,7 +50,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:fontFamily="sans-serif-medium"
-                            android:text="QR Me"
+                            android:text="@string/qr_me"
                             android:textColor="@color/textColorPrimary"
                             android:textSize="20sp" />
 
@@ -59,7 +59,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="QR Code Creator and QR Maker" />
+                            android:text="@string/qr_code_creator_and_qr_maker" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -80,7 +80,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/nunito_bold"
                     android:gravity="center"
-                    android:text="Hello 🖐️"
+                    android:text="@string/hello"
                     android:textAlignment="gravity"
                     android:textSize="30sp" />
 
@@ -89,7 +89,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/nunito_semibold"
-                    android:text="Let's join with us now !"
+                    android:text="@string/let_s_join_with_us_now"
                     android:textAlignment="center"
                     android:textSize="20sp" />
             </LinearLayout>
@@ -102,8 +102,8 @@
                 android:drawableLeft="@drawable/scan"
                 android:paddingTop="30dp"
                 android:paddingBottom="30dp"
-                android:text="Scanner me"
-                android:textColor="@color/textColorPrimary"
+                android:text="@string/scanner_me"
+                android:textColor="@color/black"
                 android:textSize="20dp"
                 app:cornerRadius="15dp" />
 
@@ -116,7 +116,7 @@
                 android:drawableLeft="@drawable/qr"
                 android:paddingTop="30dp"
                 android:paddingBottom="30dp"
-                android:text="Generate QR"
+                android:text="@string/generate_qr"
                 android:textColor="@color/textColorPrimary"
                 android:textSize="20dp"
                 app:cornerRadius="15dp" />
@@ -138,7 +138,7 @@
                     android:drawableLeft="@drawable/text"
                     android:paddingTop="30dp"
                     android:paddingBottom="30dp"
-                    android:text="Text"
+                    android:text="@string/text"
                     android:textColor="@color/textColorPrimary"
                     android:textSize="20dp"
                     app:cornerRadius="15dp" />
@@ -154,7 +154,7 @@
                     android:drawableLeft="@drawable/link"
                     android:paddingTop="30dp"
                     android:paddingBottom="30dp"
-                    android:text="URL"
+                    android:text="@string/link"
                     android:textColor="@color/textColorPrimary"
                     android:textSize="20dp"
                     app:cornerRadius="15dp" />
@@ -170,7 +170,7 @@
                     android:drawableLeft="@drawable/phone"
                     android:paddingTop="30dp"
                     android:paddingBottom="30dp"
-                    android:text="Phone Number"
+                    android:text="@string/phone_number"
                     android:textColor="@color/textColorPrimary"
                     android:textSize="20dp"
                     app:cornerRadius="15dp" />
@@ -186,7 +186,7 @@
                 android:drawableLeft="@drawable/history"
                 android:paddingTop="30dp"
                 android:paddingBottom="30dp"
-                android:text="History"
+                android:text="@string/history"
                 android:textColor="@color/textColorPrimary"
                 android:textSize="20dp"
                 app:cornerRadius="15dp" />
@@ -201,7 +201,7 @@
                 android:drawableLeft="@drawable/settings"
                 android:paddingTop="30dp"
                 android:paddingBottom="30dp"
-                android:text="App Settings"
+                android:text="@string/app_settings"
                 android:textColor="@color/textColorPrimary"
                 android:textSize="20dp"
                 app:cornerRadius="15dp" />

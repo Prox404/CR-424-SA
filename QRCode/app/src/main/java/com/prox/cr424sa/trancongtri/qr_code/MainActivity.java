@@ -10,11 +10,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private static final int REQUEST_CODE_QR_SCAN = 101;
     LinearLayout subGenerator;
-    Button btnScanner, btnGenerator, btnGeneratorText;
+    Button btnScanner, btnGenerator, btnGeneratorText, btnGeneratorURL, btnGeneratorPhone, btnHistory, btnSetting;
 
     private boolean showSubGenerate = false;
 
@@ -27,6 +27,10 @@ public class MainActivity extends AppCompatActivity {
         btnGenerator = findViewById(R.id.btn_generator);
         subGenerator = findViewById(R.id.sub_generator);
         btnGeneratorText = findViewById(R.id.btn_generate_text);
+        btnGeneratorURL = findViewById(R.id.btn_generate_url);
+        btnGeneratorPhone = findViewById(R.id.btn_generate_phone);
+        btnHistory = findViewById(R.id.btn_history);
+        btnSetting = findViewById(R.id.btn_setting);
 
         subGenerator.setVisibility(View.GONE);
 
@@ -44,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 showSubGenerate = !showSubGenerate;
                 if (showSubGenerate) {
                     subGenerator.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     subGenerator.setVisibility(View.GONE);
                 }
             }
@@ -53,10 +57,43 @@ public class MainActivity extends AppCompatActivity {
         btnGeneratorText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i  = new Intent(MainActivity.this, GenerateTextQRActivity.class);
+                Intent i = new Intent(MainActivity.this, GenerateTextQRActivity.class);
                 startActivity(i);
             }
         });
+
+        btnGeneratorURL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, GenerateLinkQRActivity.class);
+                startActivity(i);
+            }
+        });
+        btnGeneratorPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, GeneratePhoneQRActivity.class);
+                startActivity(i);
+            }
+        });
+
+        btnHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, HistoryActivity.class);
+                startActivity(i);
+            }
+        });
+
+        btnSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(i);
+            }
+        });
+
+//        LanguageManager.getInstance(this).updateAppLanguage();
     }
 
     @Override
@@ -65,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == REQUEST_CODE_QR_SCAN && resultCode == RESULT_OK && data != null) {
             String result = data.getStringExtra("SCAN_RESULT");
-            // Ở đây, bạn có thể làm bất kỳ thao tác gì với kết quả quét mã QR như hiển thị lên TextView, xử lý dữ liệu, vv.
+
         }
     }
 }

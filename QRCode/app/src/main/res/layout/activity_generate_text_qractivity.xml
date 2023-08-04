@@ -7,6 +7,7 @@
     android:gravity="bottom|center"
     android:orientation="vertical"
     android:padding="10dp"
+    android:background="@color/background_primary"
     tools:context=".GenerateTextQRActivity">
 
     <LinearLayout
@@ -23,39 +24,60 @@
             app:srcCompat="@drawable/ic_launcher_background" />
 
         <LinearLayout
+            android:id="@+id/qr_action"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btn_share"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Share" />
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:backgroundTint="@color/button"
+                android:text="@string/share"
+                android:textColor="@color/textColorPrimary"
+                app:cornerRadius="10dp"
+                app:icon="@drawable/share"
+                app:iconGravity="textStart"
+                app:iconPadding="5dp"
+                app:iconSize="25dp"
+                app:iconTint="@color/textColorPrimary" />
 
             <Button
                 android:id="@+id/btn_save"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Save" />
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginLeft="10dp"
+                android:backgroundTint="@color/button"
+                android:text="@string/save"
+                android:textColor="@color/textColorPrimary"
+                app:cornerRadius="10dp"
+                app:icon="@drawable/download"
+                app:iconGravity="textStart"
+                app:iconPadding="5dp"
+                app:iconSize="25dp"
+                app:iconTint="@color/textColorPrimary" />
+
         </LinearLayout>
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Message" />
+        android:text="@string/message" />
 
     <EditText
         android:id="@+id/editText_Text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/input_bg"
         android:ems="10"
-        android:hint="Input your message here"
-        android:inputType="text" />
+        android:hint="@string/input_your_message_here"
+        android:inputType="text"
+        android:padding="10dp" />
 
     <Button
         android:id="@+id/btn_generate"
@@ -63,7 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:backgroundTint="@color/home_scanner_item_bg"
-        android:text="Generate"
-        android:textColor="@color/textColorPrimary"
+        android:text="@string/generate"
+        android:textColor="@color/black"
         app:cornerRadius="7dp" />
 </LinearLayout>

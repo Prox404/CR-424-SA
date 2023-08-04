@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="textColorPrimary">#ffffff</color>
+    <color name="mask_scanner_color">#00FFFFFF</color>
+    <color name="background_primary">#1c202b</color>
+    <color name="status_bar_color">#1c202b</color>
+    <color name="navigation_bar_color">#1c202b</color>
+    <color name="home_scanner_item_bg">#c7f36c</color>
+    <color name="home_item_bg">#262c38</color>
+    <color name="popup_bg">#262c38</color>
+    <color name="input_bg">#2e374d</color>
+    <color name="button">#2f3851</color>
+    <color name="wrapper">#262c38</color>
+    <color name="badge">#736ae4</color>
+</resources>
